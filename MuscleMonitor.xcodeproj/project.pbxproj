@@ -1,0 +1,834 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CEDD9BEA2E7D3CC1000B45C0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF744D52E7C2243009DDD26 /* WidgetKit.framework */; };
+		CEDD9BEB2E7D3CC1000B45C0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF744D72E7C2244009DDD26 /* SwiftUI.framework */; };
+		CEDD9BF82E7D3CC3000B45C0 /* WorkoutExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CEEE81422F0577DB0086942D /* OpenFoodFactsSDK in Frameworks */ = {isa = PBXBuildFile; productRef = CEEE81412F0577DB0086942D /* OpenFoodFactsSDK */; };
+		CEEE814A2F1272CC0086942D /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = CEEE81492F1272CC0086942D /* Localizable.xcstrings */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CE8CC5A82E731BC0001623D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE8CC58F2E731BBF001623D9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE8CC5962E731BBF001623D9;
+			remoteInfo = MuscleMonitor;
+		};
+		CE8CC5B22E731BC0001623D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE8CC58F2E731BBF001623D9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE8CC5962E731BBF001623D9;
+			remoteInfo = MuscleMonitor;
+		};
+		CEDD9BF62E7D3CC3000B45C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE8CC58F2E731BBF001623D9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEDD9BE82E7D3CC1000B45C0;
+			remoteInfo = WorkoutExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CEF744EE2E7C2245009DDD26 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CEDD9BF82E7D3CC3000B45C0 /* WorkoutExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		CE8CC5972E731BBF001623D9 /* MuscleMonitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MuscleMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE8CC5A72E731BC0001623D9 /* MuscleMonitorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuscleMonitorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE8CC5B12E731BC0001623D9 /* MuscleMonitorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuscleMonitorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WorkoutExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEEE81492F1272CC0086942D /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		CEF744D52E7C2243009DDD26 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		CEF744D72E7C2244009DDD26 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CEBC42062E80969E00DF5427 /* Exceptions for "MuscleMonitor" folder in "WorkoutExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Shared/Extensions/WorkoutLiveActivityManager.swift,
+			);
+			target = CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */;
+		};
+		CEDD9BDE2E7D2E99000B45C0 /* Exceptions for "MuscleMonitor" folder in "MuscleMonitor" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CE8CC5962E731BBF001623D9 /* MuscleMonitor */;
+		};
+		CEDD9BFC2E7D3CC3000B45C0 /* Exceptions for "Workout" folder in "WorkoutExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */;
+		};
+		CEDD9C042E7D468D000B45C0 /* Exceptions for "Workout" folder in "MuscleMonitor" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				LiveActivityContent.swift,
+				WorkoutLiveActivityWidget.swift,
+				WorkoutLiveAttributes.swift,
+			);
+			target = CE8CC5962E731BBF001623D9 /* MuscleMonitor */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		CE8CC5992E731BBF001623D9 /* MuscleMonitor */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEDD9BDE2E7D2E99000B45C0 /* Exceptions for "MuscleMonitor" folder in "MuscleMonitor" target */,
+				CEBC42062E80969E00DF5427 /* Exceptions for "MuscleMonitor" folder in "WorkoutExtension" target */,
+			);
+			path = MuscleMonitor;
+			sourceTree = "<group>";
+		};
+		CE8CC5AA2E731BC0001623D9 /* MuscleMonitorTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MuscleMonitorTests;
+			sourceTree = "<group>";
+		};
+		CE8CC5B42E731BC0001623D9 /* MuscleMonitorUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MuscleMonitorUITests;
+			sourceTree = "<group>";
+		};
+		CEDD9BEC2E7D3CC1000B45C0 /* Workout */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEDD9C042E7D468D000B45C0 /* Exceptions for "Workout" folder in "MuscleMonitor" target */,
+				CEDD9BFC2E7D3CC3000B45C0 /* Exceptions for "Workout" folder in "WorkoutExtension" target */,
+			);
+			path = Workout;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CE8CC5942E731BBF001623D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEEE81422F0577DB0086942D /* OpenFoodFactsSDK in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5A42E731BC0001623D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5AE2E731BC0001623D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEDD9BE62E7D3CC1000B45C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEDD9BEB2E7D3CC1000B45C0 /* SwiftUI.framework in Frameworks */,
+				CEDD9BEA2E7D3CC1000B45C0 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CE8CC58E2E731BBF001623D9 = {
+			isa = PBXGroup;
+			children = (
+				CEEE81492F1272CC0086942D /* Localizable.xcstrings */,
+				CE8CC5992E731BBF001623D9 /* MuscleMonitor */,
+				CE8CC5AA2E731BC0001623D9 /* MuscleMonitorTests */,
+				CE8CC5B42E731BC0001623D9 /* MuscleMonitorUITests */,
+				CEDD9BEC2E7D3CC1000B45C0 /* Workout */,
+				CEF744D42E7C2243009DDD26 /* Frameworks */,
+				CE8CC5982E731BBF001623D9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CE8CC5982E731BBF001623D9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CE8CC5972E731BBF001623D9 /* MuscleMonitor.app */,
+				CE8CC5A72E731BC0001623D9 /* MuscleMonitorTests.xctest */,
+				CE8CC5B12E731BC0001623D9 /* MuscleMonitorUITests.xctest */,
+				CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CEF744D42E7C2243009DDD26 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CEF744D52E7C2243009DDD26 /* WidgetKit.framework */,
+				CEF744D72E7C2244009DDD26 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CE8CC5962E731BBF001623D9 /* MuscleMonitor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE8CC5BB2E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitor" */;
+			buildPhases = (
+				CE8CC5932E731BBF001623D9 /* Sources */,
+				CE8CC5942E731BBF001623D9 /* Frameworks */,
+				CE8CC5952E731BBF001623D9 /* Resources */,
+				CEF744EE2E7C2245009DDD26 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CEDD9BF72E7D3CC3000B45C0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CE8CC5992E731BBF001623D9 /* MuscleMonitor */,
+			);
+			name = MuscleMonitor;
+			packageProductDependencies = (
+				CEEE81412F0577DB0086942D /* OpenFoodFactsSDK */,
+			);
+			productName = MuscleMonitor;
+			productReference = CE8CC5972E731BBF001623D9 /* MuscleMonitor.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CE8CC5A62E731BC0001623D9 /* MuscleMonitorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE8CC5BE2E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitorTests" */;
+			buildPhases = (
+				CE8CC5A32E731BC0001623D9 /* Sources */,
+				CE8CC5A42E731BC0001623D9 /* Frameworks */,
+				CE8CC5A52E731BC0001623D9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE8CC5A92E731BC0001623D9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CE8CC5AA2E731BC0001623D9 /* MuscleMonitorTests */,
+			);
+			name = MuscleMonitorTests;
+			packageProductDependencies = (
+			);
+			productName = MuscleMonitorTests;
+			productReference = CE8CC5A72E731BC0001623D9 /* MuscleMonitorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CE8CC5B02E731BC0001623D9 /* MuscleMonitorUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE8CC5C12E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitorUITests" */;
+			buildPhases = (
+				CE8CC5AD2E731BC0001623D9 /* Sources */,
+				CE8CC5AE2E731BC0001623D9 /* Frameworks */,
+				CE8CC5AF2E731BC0001623D9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CE8CC5B32E731BC0001623D9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CE8CC5B42E731BC0001623D9 /* MuscleMonitorUITests */,
+			);
+			name = MuscleMonitorUITests;
+			packageProductDependencies = (
+			);
+			productName = MuscleMonitorUITests;
+			productReference = CE8CC5B12E731BC0001623D9 /* MuscleMonitorUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEDD9BF92E7D3CC3000B45C0 /* Build configuration list for PBXNativeTarget "WorkoutExtension" */;
+			buildPhases = (
+				CEDD9BE52E7D3CC1000B45C0 /* Sources */,
+				CEDD9BE62E7D3CC1000B45C0 /* Frameworks */,
+				CEDD9BE72E7D3CC1000B45C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CEDD9BEC2E7D3CC1000B45C0 /* Workout */,
+			);
+			name = WorkoutExtension;
+			packageProductDependencies = (
+			);
+			productName = WorkoutExtension;
+			productReference = CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CE8CC58F2E731BBF001623D9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 2600;
+				TargetAttributes = {
+					CE8CC5962E731BBF001623D9 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					CE8CC5A62E731BC0001623D9 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = CE8CC5962E731BBF001623D9;
+					};
+					CE8CC5B02E731BC0001623D9 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = CE8CC5962E731BBF001623D9;
+					};
+					CEDD9BE82E7D3CC1000B45C0 = {
+						CreatedOnToolsVersion = 26.0;
+					};
+				};
+			};
+			buildConfigurationList = CE8CC5922E731BBF001623D9 /* Build configuration list for PBXProject "MuscleMonitor" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				fr,
+			);
+			mainGroup = CE8CC58E2E731BBF001623D9;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CEEE813C2F0576A20086942D /* XCRemoteSwiftPackageReference "openfoodfacts-swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CE8CC5982E731BBF001623D9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CE8CC5962E731BBF001623D9 /* MuscleMonitor */,
+				CE8CC5A62E731BC0001623D9 /* MuscleMonitorTests */,
+				CE8CC5B02E731BC0001623D9 /* MuscleMonitorUITests */,
+				CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CE8CC5952E731BBF001623D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEEE814A2F1272CC0086942D /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5A52E731BC0001623D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5AF2E731BC0001623D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEDD9BE72E7D3CC1000B45C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CE8CC5932E731BBF001623D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5A32E731BC0001623D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE8CC5AD2E731BC0001623D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEDD9BE52E7D3CC1000B45C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CE8CC5A92E731BC0001623D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE8CC5962E731BBF001623D9 /* MuscleMonitor */;
+			targetProxy = CE8CC5A82E731BC0001623D9 /* PBXContainerItemProxy */;
+		};
+		CE8CC5B32E731BC0001623D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE8CC5962E731BBF001623D9 /* MuscleMonitor */;
+			targetProxy = CE8CC5B22E731BC0001623D9 /* PBXContainerItemProxy */;
+		};
+		CEDD9BF72E7D3CC3000B45C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */;
+			targetProxy = CEDD9BF62E7D3CC3000B45C0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		CE8CC5B92E731BC0001623D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CE8CC5BA2E731BC0001623D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CE8CC5BC2E731BC0001623D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = MuscleMonitor/MuscleMonitor.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MuscleMonitor/Preview Content\"";
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MuscleMonitor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "MuscleMonitor a besoin d'utiliser la caméra afin de pouvoir lire les codes barre des aliments";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor a besoin de lire vos calories d'activité et de repos pour calculer votre balance énergétique quotidienne avec précision.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos repas et apports nutritionnels dans Apple Santé pour vous aider à centraliser le suivi de votre nutrition.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CE8CC5BD2E731BC0001623D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = MuscleMonitor/MuscleMonitor.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MuscleMonitor/Preview Content\"";
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MuscleMonitor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSCameraUsageDescription = "MuscleMonitor a besoin d'utiliser la caméra afin de pouvoir lire les codes barre des aliments";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor a besoin de lire vos calories d'activité et de repos pour calculer votre balance énergétique quotidienne avec précision.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos repas et apports nutritionnels dans Apple Santé pour vous aider à centraliser le suivi de votre nutrition.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CE8CC5BF2E731BC0001623D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MuscleMonitor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MuscleMonitor";
+			};
+			name = Debug;
+		};
+		CE8CC5C02E731BC0001623D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitorTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MuscleMonitor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MuscleMonitor";
+			};
+			name = Release;
+		};
+		CE8CC5C22E731BC0001623D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MuscleMonitor;
+			};
+			name = Debug;
+		};
+		CE8CC5C32E731BC0001623D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitorUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MuscleMonitor;
+			};
+			name = Release;
+		};
+		CEDD9BFA2E7D3CC3000B45C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Workout/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Workout;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor.Workout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CEDD9BFB2E7D3CC3000B45C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Workout/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Workout;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor.Workout;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CE8CC5922E731BBF001623D9 /* Build configuration list for PBXProject "MuscleMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE8CC5B92E731BC0001623D9 /* Debug */,
+				CE8CC5BA2E731BC0001623D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE8CC5BB2E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE8CC5BC2E731BC0001623D9 /* Debug */,
+				CE8CC5BD2E731BC0001623D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE8CC5BE2E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE8CC5BF2E731BC0001623D9 /* Debug */,
+				CE8CC5C02E731BC0001623D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE8CC5C12E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitorUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE8CC5C22E731BC0001623D9 /* Debug */,
+				CE8CC5C32E731BC0001623D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEDD9BF92E7D3CC3000B45C0 /* Build configuration list for PBXNativeTarget "WorkoutExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEDD9BFA2E7D3CC3000B45C0 /* Debug */,
+				CEDD9BFB2E7D3CC3000B45C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CEEE813C2F0576A20086942D /* XCRemoteSwiftPackageReference "openfoodfacts-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/openfoodfacts/openfoodfacts-swift";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CEEE81412F0577DB0086942D /* OpenFoodFactsSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEEE813C2F0576A20086942D /* XCRemoteSwiftPackageReference "openfoodfacts-swift" */;
+			productName = OpenFoodFactsSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = CE8CC58F2E731BBF001623D9 /* Project object */;
+}
