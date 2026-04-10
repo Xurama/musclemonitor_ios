@@ -635,7 +635,7 @@ final class WorkoutRunViewModel: ObservableObject {
         let insertIndex = min(currentIndex + 1, workout.exercises.count)
         workout.exercises.insert(exercise, at: insertIndex)
 
-        // Initialize state for the new exercise
+        // Initialize state with default values (will be overridden by history if found)
         setsDone[exercise.id] = 0
         repsBySet[exercise.id] = Array(repeating: exercise.targetReps, count: max(exercise.sets, 1))
         weightBySet[exercise.id] = Array(repeating: 0.0, count: max(exercise.sets, 1))
@@ -650,6 +650,47 @@ final class WorkoutRunViewModel: ObservableObject {
         }
 
         objectWillChange.send()
+
+        // Asynchronously pre-fill with last known values for this exercise
+        Task { await preloadLastValuesForNewExercise(exercise) }
+    }
+
+    private func preloadLastValuesForNewExercise(_ exercise: Workout.Exercise) async {
+        do {
+            let allSessions = try await sessionRepo.list()
+            guard let prevEx = allSessions
+                .sorted(by: { $0.endedAt > $1.endedAt })
+                .compactMap({ $0.exercises.first(where: { $0.name == exercise.name }) })
+                .first
+            else { return }
+
+            let totalNeeded = max(exercise.sets, 1)
+            var finalWeights = prevEx.sets.map { $0.weight }
+            var finalReps    = prevEx.sets.map { $0.reps }
+            var finalWarmups = prevEx.sets.map { $0.isWarmup }
+
+            if finalWeights.count < totalNeeded {
+                let extra = totalNeeded - finalWeights.count
+                finalWeights.append(contentsOf: Array(repeating: finalWeights.last ?? 0, count: extra))
+                finalReps.append(contentsOf: Array(repeating: finalReps.last ?? exercise.targetReps, count: extra))
+                finalWarmups.append(contentsOf: Array(repeating: false, count: extra))
+            }
+
+            let adaptedResult = WorkoutSession.ExerciseResult(
+                exerciseId: exercise.id,
+                name: exercise.name,
+                sets: prevEx.sets,
+                equipment: prevEx.equipment
+            )
+
+            self.weightBySet[exercise.id] = finalWeights
+            self.repsBySet[exercise.id] = finalReps
+            self.warmupBySet[exercise.id] = finalWarmups
+            self.lastSessionData[exercise.id] = adaptedResult
+            self.objectWillChange.send()
+        } catch {
+            print("[MM][AddExercise] Failed to load last values:", error)
+        }
     }
 
     // MARK: - Logique de comparaison (Diff avec dernière séance)
