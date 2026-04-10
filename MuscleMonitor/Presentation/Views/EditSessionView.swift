@@ -5,7 +5,6 @@
 //  Created by Lucas Philippe on 01/10/2025.
 //
 
-
 //
 //  EditSessionView.swift
 //  MuscleMonitor
@@ -23,6 +22,7 @@ struct EditSessionView: View {
     @State private var startTime: Date
     @State private var durationMinText: String
     @State private var inputs: [ExerciseInput]
+    @State private var showAddExerciseSheet: Bool = false
 
     init(original: WorkoutSession, onCancel: @escaping () -> Void, onSave: @escaping (WorkoutSession) -> Void) {
         self.original = original
@@ -76,18 +76,25 @@ struct EditSessionView: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button("cancel", action: onCancel)
             }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showAddExerciseSheet = true
+                } label: {
+                    Label("add_exercise", systemImage: "plus")
+                }
+            }
             ToolbarItem(placement: .confirmationAction) {
                 Button("save") {
                     guard let mins = Int(durationMinText.trimmingCharacters(in: .whitespaces)),
                           mins > 0 else { return }
 
-                    // Reconstruire endedAt (jour + heure)
+                    // Reconstruire startedAt (jour + heure de début) puis endedAt = start + durée
                     var cal = Calendar.current
                     let dcDay = cal.dateComponents([.year,.month,.day], from: day)
                     var dcTime = cal.dateComponents([.hour,.minute,.second], from: startTime)
                     dcTime.year = dcDay.year; dcTime.month = dcDay.month; dcTime.day = dcDay.day
-                    let newEnded = cal.date(from: dcTime) ?? original.endedAt
-                    let newStarted = newEnded.addingTimeInterval(TimeInterval(-mins * 60))
+                    let newStarted = cal.date(from: dcTime) ?? original.startedAt
+                    let newEnded = newStarted.addingTimeInterval(TimeInterval(mins * 60))
 
                     // Reconstruire les résultats d’exercices
                     let exResults: [WorkoutSession.ExerciseResult] = inputs.map { inp in
@@ -119,6 +126,33 @@ struct EditSessionView: View {
 
                     onSave(updated)
                 }
+            }
+        }
+        .sheet(isPresented: $showAddExerciseSheet) {
+            AddExerciseSheet { newExercise in
+                // Convert Workout.Exercise to local ExerciseInput with defaults
+                let count = max(newExercise.sets, 1)
+                let defaultReps: Int
+                switch newExercise.effort {
+                case .reps(let r):
+                    defaultReps = r
+                case .time(let s):
+                    defaultReps = s
+                case .distance:
+                    // Pas de stockage natif de la distance dans WorkoutSession pour l'instant
+                    defaultReps = 0
+                }
+                let reps = Array(repeating: defaultReps, count: count)
+                let weights = Array(repeating: 0.0, count: count)
+                let input = ExerciseInput(
+                    exerciseId: newExercise.id,
+                    name: newExercise.name,
+                    reps: reps,
+                    weights: weights,
+                    equipment: newExercise.equipment
+                )
+                inputs.append(input)
+                showAddExerciseSheet = false
             }
         }
     }
@@ -181,7 +215,7 @@ private struct EditExerciseRow: View {
                         TextField("", text: Binding(
                             get: {
                                 let v = exInput.weights[i]
-                                return v == 0 ? "" : (v.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(v)) : String(v))
+                                return v == 0 ? "" : (v.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(v)) : String(format: "%.1f", v))
                             },
                             set: { t in
                                 if t.isEmpty { exInput.weights[i] = 0; return }
@@ -204,3 +238,4 @@ private struct EditExerciseRow: View {
         .padding(.vertical, 4)
     }
 }
+

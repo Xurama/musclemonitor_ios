@@ -39,6 +39,11 @@ final class WorkoutRunViewModel: ObservableObject {
     
     @Published var showPRCelebration: Bool = false
     private var personalRecords: [String: Double] = [:]
+
+    @Published var saveError: String? = nil
+    @Published private(set) var exerciseTransitionDirection: Int = 1
+
+    private var historyLabelTask: Task<Void, Never>?
     
     @Published private var warmupBySet: [String: [Bool]] = [:]
     
@@ -62,6 +67,13 @@ final class WorkoutRunViewModel: ObservableObject {
         startGlobalTimer()
     }
 
+    deinit {
+        globalTimer?.cancel()
+        restTimer?.cancel()
+        exerciseTimer?.cancel()
+        historyLabelTask?.cancel()
+    }
+
     private func bootstrap() {
         for ex in workout.exercises {
             setsDone[ex.id] = 0
@@ -76,9 +88,11 @@ final class WorkoutRunViewModel: ObservableObject {
         Task {
             await preloadLastValues()
 
-            // ✅ si pas d’historique pour le 1er exo, on garde le défaut
-            // (et si historique existe, preloadLastValues aura mis les vrais warmups)
-            applyDefaultWarmupForFirstExerciseIfNeeded()
+            // Appliquer le warmup par défaut uniquement si aucun historique
+            // n’a été trouvé pour le premier exercice (sinon on écraserait les vrais warmups)
+            if let first = workout.exercises.first, lastSessionData[first.id] == nil {
+                applyDefaultWarmupForFirstExerciseIfNeeded()
+            }
 
             await loadPersonalRecords()
             updateHistoryLabel()
@@ -224,9 +238,9 @@ final class WorkoutRunViewModel: ObservableObject {
     // MARK: - Navigation
     
     func nextExercise(withRest: Bool = false) {
-        // On arrête le chrono mais on ne force plus la synchronisation sauvage vers l'index 0
+        exerciseTransitionDirection = 1
         if isExerciseTimerRunning { stopExerciseTimer() }
-        
+
         guard currentIndex < workout.exercises.count - 1 else { return }
         currentIndex += 1
         
@@ -238,6 +252,7 @@ final class WorkoutRunViewModel: ObservableObject {
     }
 
     func previousExercise() {
+        exerciseTransitionDirection = -1
         guard currentIndex > 0 else { return }
         currentIndex -= 1
         
@@ -404,16 +419,19 @@ final class WorkoutRunViewModel: ObservableObject {
     
     func addSet(_ ex: Workout.Exercise) {
         let lastWeight = weightBySet[ex.id]?.last ?? 0.0
-        repsBySet[ex.id, default: []].append(ex.targetReps)
+        let lastReps = repsBySet[ex.id]?.last ?? ex.targetReps
+        repsBySet[ex.id, default: []].append(lastReps)
         weightBySet[ex.id, default: []].append(lastWeight)
         warmupBySet[ex.id, default: []].append(false)
         objectWillChange.send()
     }
     
-    func finishAndPersist() async {
+    /// Sauvegarde la séance et termine l'activité en direct.
+    /// Retourne `true` en cas de succès, `false` en cas d'échec (saveError est alors renseigné).
+    func finishAndPersist() async -> Bool {
         stopExerciseTimer()
         let endedAt = Date()
-        
+
         let exercisesResults: [WorkoutSession.ExerciseResult] = workout.exercises.map { ex in
             let repsArr = repsBySet[ex.id] ?? []
             let weightArr = weightBySet[ex.id] ?? []
@@ -425,7 +443,6 @@ final class WorkoutRunViewModel: ObservableObject {
                     isWarmup: warmupBySet[ex.id]?[safe: i] ?? false
                 )
             }
-
             return .init(exerciseId: ex.id, name: ex.name, sets: sets, equipment: ex.equipment)
         }
 
@@ -437,8 +454,14 @@ final class WorkoutRunViewModel: ObservableObject {
             exercises: exercisesResults
         )
 
-        try? await sessionRepo.add(session)
-        WorkoutLiveActivityManager.shared.end(success: true)
+        do {
+            try await sessionRepo.add(session)
+            WorkoutLiveActivityManager.shared.end(success: true)
+            return true
+        } catch {
+            saveError = "La séance n'a pas pu être sauvegardée. Vérifiez l'espace disponible et réessayez."
+            return false
+        }
     }
 
     private func preloadLastValues() async {
@@ -506,9 +529,11 @@ final class WorkoutRunViewModel: ObservableObject {
                 }.max()
                 personalRecords[ex.id] = best ?? 0
             }
-        } catch { }
+        } catch {
+            print("[MM][PersonalRecords] load ERROR:", error)
+        }
     }
-    
+
     private func findLastSession() async -> WorkoutSession? {
         do {
             return try await sessionRepo.list()
@@ -520,8 +545,11 @@ final class WorkoutRunViewModel: ObservableObject {
     
     private func updateHistoryLabel() {
         guard let ex = currentExercise else { return }
-        Task {
+        historyLabelTask?.cancel()
+        historyLabelTask = Task {
+            guard !Task.isCancelled else { return }
             let last = await findLastSession()
+            guard !Task.isCancelled else { return }
             if let prevEx = last?.exercises.first(where: { $0.exerciseId == ex.id }),
                let firstSet = prevEx.sets.first {
                 if ex.isTimeBased {

@@ -37,80 +37,10 @@ final class CreateWorkoutViewModel: ObservableObject {
     var filteredExercises: [String] {
         guard !selectedTags.isEmpty else { return allExercises }
         return allExercises.filter { name in
-            // Utilise la nouvelle constante
-            guard let tags = exerciseMapping[name] else { return false }
+            guard let tags = Workout.Exercise.muscleMapping[name] else { return false }
             return !tags.isDisjoint(with: selectedTags)
         }
     }
-    
-    private let exerciseMapping: [String: Set<MuscleTag>] = [
-        // Pectoraux / Poussé
-        "db_bench_press": [.pectoraux, .triceps, .epaules],
-        "db_incline_press": [.pectoraux, .triceps, .epaules],
-        "chest_fly_machine": [.pectoraux],
-        "dips_weighted": [.pectoraux, .triceps],
-        
-        // Épaules
-        "barbell_shoulder_press": [.epaules, .triceps],
-        "db_lateral_raises": [.epaules],
-        "face_pulls": [.epaules],
-        
-        // Dos / Tirage
-        "deadlift": [.dos, .ischio, .fessiers],
-        "lat_pulldown": [.dos, .biceps],
-        "seated_row": [.dos, .biceps],
-        "shrugs": [.dos],
-        "weighted_pullups": [.dos, .biceps],
-        "scapular_pull_ups": [.dos, .biceps],
-        
-        // Bras
-        "triceps_pushdown": [.triceps],
-        "biceps_curl": [.biceps],
-        
-        // Jambes
-        "squat": [.quadriceps, .fessiers, .ischio],
-        "leg_press": [.quadriceps, .fessiers, .ischio],
-        "hip_thrust": [.fessiers],
-        "leg_curl": [.ischio],
-        "leg_extension": [.quadriceps],
-        "calf_raise": [.mollets],
-        "walking_lunges": [.quadriceps, .fessiers, .ischio],
-        "hip_abduction": [.fessiers],
-        
-        // Abdos / Gainage
-        "plank": [.abdominaux],
-        "leg_raises": [.abdominaux],
-        "dynamic_plank_taps": [.abdominaux],
-        "hanging_leg_raises": [.abdominaux],
-        "dynamic_plank": [.abdominaux],
-        "side_crunch": [.abdominaux],
-        "hollow_body_hold": [.abdominaux],
-        "side_plank": [.abdominaux],
-        "mountain_climbers": [.abdominaux],
-        
-        // Cardio
-        "running": [.cardio],
-        "rowing_machine": [.cardio, .dos, .quadriceps, .ischio],
-        "stationary_bike": [.cardio, .quadriceps],
-        "elliptical_bike": [.cardio, .quadriceps, .ischio],
-        
-        // Hyrox
-        "burpees": [.pectoraux, .quadriceps, .epaules, .abdominaux],
-        "db_thrusters": [.quadriceps, .fessiers, .epaules, .triceps]
-    ]
-    
-    private let timeBasedNames: Set<String> = [
-        "plank",
-        "dynamic_plank",
-        "hollow_body_hold",
-        "running",
-        "rowing_machine",
-        "stationary_bike",
-        "elliptical_bike",
-        "side_plank",
-        "mountain_climbers"
-        // Tu peux en ajouter d'autres si besoin
-    ]
 
     // Sélection exercices
     @Published var selectedNames: Set<String> = []
@@ -139,8 +69,8 @@ final class CreateWorkoutViewModel: ObservableObject {
     }
 
     // Charger le catalogue
-    func loadCatalog() { Task { 
-        self.allExercises = Array(exerciseMapping.keys).sorted()
+    func loadCatalog() { Task {
+        self.allExercises = await catalogRepo.allExercises()
         print("[CreateWorkoutVM] loaded catalog: \(allExercises.count) keys")
     } }
 
@@ -158,13 +88,13 @@ final class CreateWorkoutViewModel: ObservableObject {
             if configs[name] == nil {
                 // On récupère le tag qui a servi à filtrer cet exercice
                 // (ou on définit un mapping statique SEULEMENT ICI à la création)
-                let detectedTag = exerciseMapping[name]?.first ?? .dos
+                let detectedTag = Workout.Exercise.muscleMapping[name]?.first ?? .dos
 
                 configs[name] = Workout.Exercise(
                     name: name,
-                    muscleGroup: detectedTag, // ⬅️ Assigné à la création
+                    muscleGroup: detectedTag,
                     sets: 3,
-                    effort: timeBasedNames.contains(name) ? .time(seconds: 60) : .reps(10),
+                    effort: Workout.Exercise.defaultEffort(for: name),
                     restSec: 90
                 )
             }
@@ -200,15 +130,6 @@ final class CreateWorkoutViewModel: ObservableObject {
                               exercises: orderedExercises)
         print("[buildWorkout] built id: \(workout.id), name: \(workout.name ?? "-"), exercises: \(workout.exercises.count)")
         return workout
-    }
-    
-    private let cardioNames: Set<String> = [
-        "running", "rowing_machine", "stationary_bike", "elliptical_bike"
-    ]
-
-    // Ajoute cette petite fonction helper pour l'utiliser dans la vue
-    func isCardio(_ name: String) -> Bool {
-        return cardioNames.contains(name)
     }
     
     func removeExercise(_ name: String) {

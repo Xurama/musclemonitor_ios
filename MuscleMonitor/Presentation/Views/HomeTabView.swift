@@ -75,6 +75,14 @@ struct HomeTabView: View {
                 }
                 Button("cancel", role: .cancel) { }
             }
+            .alert("Erreur", isPresented: Binding(
+                get: { vm.errorMessage != nil },
+                set: { if !$0 { vm.errorMessage = nil } }
+            ), actions: {
+                Button("OK") { vm.errorMessage = nil }
+            }, message: {
+                Text(vm.errorMessage ?? "")
+            })
         }
     }
 }

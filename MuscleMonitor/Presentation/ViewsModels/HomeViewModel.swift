@@ -51,6 +51,8 @@ final class HomeViewModel: ObservableObject {
     @Published var weekCompleted: Int = 0
     @Published var weekTarget: Int = 4
 
+    @Published var errorMessage: String? = nil
+
     init(workoutsRepo: WorkoutRepository,
          sessionRepo: WorkoutSessionRepository, prefsRepo: PreferencesRepository, userId: String) {
         self.workoutsRepo = workoutsRepo
@@ -73,12 +75,12 @@ final class HomeViewModel: ObservableObject {
 
     private func loadWorkouts() async {
         do { workouts = try await workoutsRepo.list() }
-        catch { workouts = [] }
+        catch { print("[MM][Workouts] load ERROR:", error); workouts = [] }
     }
 
     private func loadSessions() async {
         do { sessions = try await sessionRepo.list() }
-        catch { sessions = [] }
+        catch { print("[MM][Sessions] load ERROR:", error); sessions = [] }
     }
 
     private func weekBounds(for date: Date = .now) -> (start: Date, end: Date) {
@@ -126,6 +128,7 @@ final class HomeViewModel: ObservableObject {
                 await loadWorkouts()
             } catch {
                 toConfirmDelete = nil
+                errorMessage = "Impossible de supprimer le programme \"\(w.displayTitle)\"."
             }
         }
     }
@@ -134,10 +137,11 @@ final class HomeViewModel: ObservableObject {
         isPresentingCreate = false
         Task { @MainActor in
             do {
-                try await workoutsRepo.add(new)     // ⬅️ on SAUVE
-                await loadWorkouts()                // puis on recharge
+                try await workoutsRepo.add(new)
+                await loadWorkouts()
             } catch {
                 print("[MM][Workouts] add ERROR:", error)
+                errorMessage = "Impossible de créer le programme. Veuillez réessayer."
             }
         }
     }
@@ -147,10 +151,11 @@ final class HomeViewModel: ObservableObject {
         editingWorkout = nil
         Task { @MainActor in
             do {
-                try await workoutsRepo.update(edited) // ⬅️ on MET À JOUR
-                await loadWorkouts()                  // puis on recharge
+                try await workoutsRepo.update(edited)
+                await loadWorkouts()
             } catch {
                 print("[MM][Workouts] update ERROR:", error)
+                errorMessage = "Impossible de modifier le programme. Veuillez réessayer."
             }
         }
     }
@@ -205,6 +210,7 @@ final class HomeViewModel: ObservableObject {
                 computeWeekStats()
             } catch {
                 print("[MM][Sessions] manual add ERROR:", error)
+                errorMessage = "Impossible de sauvegarder la séance. Veuillez réessayer."
             }
         }
     }

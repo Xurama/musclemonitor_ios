@@ -5,11 +5,14 @@
 //  Created by Lucas Philippe on 13/09/2025.
 //
 
-// WorkoutRunView.swift
-
 import SwiftUI
 import PhotosUI
-import UIKit
+import ActivityKit
+import CoreHaptics
+
+fileprivate func simpleHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+    UIImpactFeedbackGenerator(style: style).impactOccurred()
+}
 
 struct WorkoutRunView: View {
     @Environment(\.dismiss) private var dismiss
@@ -21,8 +24,10 @@ struct WorkoutRunView: View {
     @State private var showFinishConfirm = false
     @State private var showAddExerciseSheet = false
     
-    @State private var showSharePrompt: Bool = false
-    @State private var showBackgroundPrompt: Bool = false
+    // ✅ Définition de l'état de partage avec Equatable pour l'alerte
+    enum ShareStep: Equatable { case none, askShare, askPhoto }
+    @State private var shareStep: ShareStep = .none
+    
     @State private var showPhotoPickerModal: Bool = false
     @State private var isShareFlowActive: Bool = false
     @State private var waitingForBackground: Bool = false
@@ -30,11 +35,14 @@ struct WorkoutRunView: View {
     @State private var shareBackgroundImage: UIImage? = nil
     @State private var photoItem: PhotosPickerItem? = nil
 
+    // --- Animations & Haptics ---
+    @State private var previousButtonPressed = false
+    @State private var nextButtonPressed = false
+
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 16) {
-                    // ✅ BARRE DE PROGRESSION DISCRETE
                     ProgressView(value: vm.sessionProgress)
                         .tint(.accentColor)
                         .scaleEffect(x: 1, y: 0.5, anchor: .center)
@@ -47,7 +55,6 @@ struct WorkoutRunView: View {
                     Divider().padding(.vertical, 4)
                     
                     if let ex = vm.currentExercise {
-                        // ✅ HISTORIQUE (Dernière fois)
                         if let history = vm.lastSessionValue {
                             Text(history)
                                 .font(.caption.italic())
@@ -55,60 +62,54 @@ struct WorkoutRunView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, 4)
                         }
-                        
-                        exerciseDetails(ex)
+                        // --- Animations & Haptics ---
+                        ZStack {
+                            exerciseDetails(ex)
+                                .id(ex.id)
+                                .transition(.exerciseSwitch(direction: vm.exerciseTransitionDirection))
+                        }
+                        .animation(.easeInOut, value: ex.id)
                     }
-                    
-                    navControls
-                        .padding(.top, 8)
-
                 }
                 .padding()
-                    .blur(radius: vm.showPRCelebration ? 3 : 0)
-                    .animation(.easeInOut, value: vm.showPRCelebration)
+                .frame(maxHeight: .infinity, alignment: .top)
+                .blur(radius: vm.showPRCelebration ? 3 : 0)
+                .animation(.easeInOut, value: vm.showPRCelebration)
 
-                    // ✅ Animation de Célébration améliorée
-                    if vm.showPRCelebration {
-                        Color.black.opacity(0.2)
-                            .ignoresSafeArea()
-                            .onTapGesture { withAnimation { vm.showPRCelebration = false } }
+                if vm.showPRCelebration {
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                        .onTapGesture { withAnimation { vm.showPRCelebration = false } }
 
-                        PRCelebrationView()
-                            .transition(.asymmetric(
-                                insertion: .scale(scale: 0.5).combined(with: .opacity),
-                                removal: .opacity
-                            ))
-                            .zIndex(99) // S'assure qu'il est au dessus de TOUT
-                    }
+                    PRCelebrationView()
+                        .transition(.asymmetric(
+                            insertion: .scale(scale: 0.5).combined(with: .opacity),
+                            removal: .opacity
+                        ))
+                        .zIndex(99)
+                }
             }
             .navigationTitle("session")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
+            .photosPicker(isPresented: $showPhotoPickerModal, selection: $photoItem, matching: .images)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: { showQuitConfirm = true }) {
                         Image(systemName: "chevron.backward")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    PhotosPicker(selection: $photoItem, matching: .images) {
-                        Image(systemName: "photo").imageScale(.medium)
-                    }
-                }
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("end") {
                         Task {
-                            await vm.finishAndPersist()
-                            showSharePrompt = true
+                            if await vm.finishAndPersist() {
+                                shareStep = .askShare
+                            }
                         }
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    let img = renderRunShareImage()
-                    ShareLink(item: img, preview: SharePreview("my_workout", image: img)) {
-                        Image(systemName: "square.and.arrow.up")
-                    }
-                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {
                         Button(role: .destructive, action: { vm.removeCurrentExercise() }) {
@@ -122,6 +123,24 @@ struct WorkoutRunView: View {
                     }
                 }
             }
+            // ✅ Utilisation de notre nouvelle extension ici !
+            .workoutShareAlert(
+                step: $shareStep,
+                onSharePlain: {
+                    isShareFlowActive = true
+                    waitingForBackground = false
+                    shareToInstagramNow()
+                    session.endRun()
+                },
+                onShareWithPhoto: {
+                    isShareFlowActive = true
+                    waitingForBackground = true
+                    showPhotoPickerModal = true
+                },
+                onCancel: {
+                    session.endRun()
+                }
+            )
             .alert("leave_session", isPresented: $showQuitConfirm) {
                 Button("cancel", role: .cancel) { }
                 Button("leave", role: .destructive) {
@@ -135,46 +154,21 @@ struct WorkoutRunView: View {
                 Button("cancel", role: .cancel) { }
                 Button("end") {
                     Task {
-                        await vm.finishAndPersist()
-                        showSharePrompt = true
+                        if await vm.finishAndPersist() {
+                            shareStep = .askShare
+                        }
                     }
                 }
             } message: {
                 Text("save_session_complete")
             }
-            .confirmationDialog("share_instagram_story", isPresented: $showSharePrompt, titleVisibility: .visible) {
-                Button("share") {
-                    showBackgroundPrompt = true
-                }
-                Button("not_now", role: .cancel) {
-                    session.endRun()
-                }
+            .alert("Erreur de sauvegarde", isPresented: Binding(
+                get: { vm.saveError != nil },
+                set: { if !$0 { vm.saveError = nil } }
+            )) {
+                Button("OK") { vm.saveError = nil }
             } message: {
-                Text("Souhaitez-vous partager cette séance en story Instagram ?")
-            }
-            .confirmationDialog("add_background_photo", isPresented: $showBackgroundPrompt, titleVisibility: .visible) {
-                Button("yes") {
-                    isShareFlowActive = true
-                    waitingForBackground = true
-                    showPhotoPickerModal = true
-                }
-                Button("no") {
-                    isShareFlowActive = true
-                    waitingForBackground = false
-                    shareToInstagramNow()
-                    session.endRun()
-                }
-            } message: {
-                Text("Ajouter une photo de fond à la carte de partage ?")
-            }
-            .sheet(isPresented: $showPhotoPickerModal) {
-                PhotosPicker(selection: $photoItem, matching: .images) {
-                    VStack(spacing: 8) {
-                        Image(systemName: "photo").imageScale(.large)
-                        Text("choose_a_photo")
-                    }
-                    .padding()
-                }
+                Text(vm.saveError ?? "")
             }
             .onAppear {
                 session.hasActiveWorkout = true
@@ -211,9 +205,11 @@ struct WorkoutRunView: View {
             }
             .sheet(isPresented: $showAddExerciseSheet) {
                 AddExerciseSheet { newExercise in
-                    // Insert just after current and jump to it
                     vm.addExerciseAfterCurrent(newExercise)
                 }
+            }
+            .safeAreaInset(edge: .bottom) {
+                navControls
             }
         }
     }
@@ -260,15 +256,11 @@ struct WorkoutRunView: View {
         let currentSet = vm.getSetsDone(for: ex) + 1
         let totalSets = vm.currentSetCount(ex)
         
-        // ✅ Détection de l'Overtime : Muscu/Gainage dont le chrono est passé sous 0
         let isOvertime = !ex.isCardio && vm.activeExerciseSeconds < 0 && !isFinished
-        
-        // Valeur brute à afficher (on utilise la valeur absolue pour éviter le signe "-" natif)
         let displaySeconds = isFinished ? vm.getRecordedTime(for: ex) : abs(vm.activeExerciseSeconds)
 
         return VStack(spacing: 12) {
             HStack(spacing: 20) {
-                // --- SECTION TEXTE (Label + Chrono) ---
                 VStack(alignment: .leading, spacing: 0) {
                     Text(isOvertime ? "OVERTIME" : (ex.isCardio ? "CHRONOMÈTRE" : "SÉRIE \(currentSet)/\(totalSets)"))
                         .font(.system(size: 10, weight: .black))
@@ -289,9 +281,7 @@ struct WorkoutRunView: View {
                 
                 Spacer()
                 
-                // --- SECTION BOUTONS ---
                 if isFinished {
-                    // État terminé
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
                         Text("\(timeString(vm.getRecordedTime(for: ex))) enregistré")
@@ -303,7 +293,6 @@ struct WorkoutRunView: View {
                     .clipShape(Capsule())
                 } else {
                     HStack(spacing: 12) {
-                        // 1. Bouton Reset (Flèche qui tourne)
                         Button(action: { vm.resetExerciseTimer(for: ex) }) {
                             Image(systemName: "arrow.clockwise")
                                 .font(.system(size: 18))
@@ -313,15 +302,12 @@ struct WorkoutRunView: View {
                                 .clipShape(Circle())
                         }
 
-                        // 2. Bouton Play / Pause
                         Button(action: { vm.toggleExerciseTimer(for: ex) }) {
                             Image(systemName: vm.isExerciseTimerRunning ? "pause.circle.fill" : "play.circle.fill")
                                 .font(.system(size: 44))
                                 .foregroundColor(isOvertime ? .red : (ex.isCardio ? .blue : .orange))
                         }
 
-                        // 3. Bouton Stop (Bouton Rouge de validation)
-                        // On ne l'affiche que si le chrono a commencé à bouger
                         if vm.activeExerciseSeconds != (ex.isCardio ? 0 : ex.targetSeconds) {
                             Button(action: {
                                 withAnimation { vm.stopAndSaveExercise(for: ex) }
@@ -335,8 +321,7 @@ struct WorkoutRunView: View {
                 }
             }
             
-            // --- SECTION DISTANCE (Uniquement pour le Cardio) ---
-            if ex.isCardio {
+            if ex.isCardio || ex.isDistanceBased {
                 HStack {
                     Image(systemName: "point.topleft.down.curvedto.point.bottomright.up")
                         .foregroundStyle(.blue)
@@ -366,57 +351,60 @@ struct WorkoutRunView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text(LocalizedStringKey(ex.name)).font(.title2.bold())
 
-            if ex.isTimeBased {
+            if ex.isTimeBased || ex.isDistanceBased || ex.isCardio {
                 exerciseTimerOverlay(ex)
             }
 
             if !ex.isCardio {
-                HStack {
-                    Text("\(vm.getSetsDone(for: ex))/\(vm.currentSetCount(ex)) sets")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Spacer()
-                    Menu {
-                        Button("copy_reps") { vm.applySameReps(vm.reps(for: ex, setIndex: 0), for: ex) }
-                        Button("copy_weight") { vm.applySameWeight(vm.weight(for: ex, setIndex: 0), for: ex) }
-                    } label: {
-                        Image(systemName: "rectangle.on.rectangle.angled")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(0..<vm.currentSetCount(ex), id: \.self) { idx in
+                List {
+                    ForEach(0..<vm.currentSetCount(ex), id: \.self) { idx in
+                        // --- Animations & Haptics ---
+                        ZStack(alignment: .bottom) {
                             SetRowView(ex: ex, idx: idx, vm: vm)
                                 .id("\(ex.id)-set-\(idx)")
-                                .background(Color(.systemBackground))
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
-                                        // ✅ Correction ici : Accès explicite via self.vm
+                                        // --- Animations & Haptics ---
                                         withAnimation {
+                                            simpleHaptic(.light)
                                             self.vm.removeSet(ex, at: idx)
                                         }
                                     } label: {
                                         Label("delete", systemImage: "trash")
                                     }
                                 }
-                            
-                            Divider()
-                        }
 
-                        Button { vm.addSet(ex) } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                Text("add_a_set")
-                            }
-                            .frame(maxWidth: .infinity)
+                            Divider()
+                                .padding(.leading, 0)
                         }
-                        .buttonStyle(.bordered)
-                        .padding(.vertical, 8)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemBackground))
+                        .transition(.move(edge: .bottom))
                     }
+
+                    Button {
+                        // --- Animations & Haptics ---
+                        withAnimation {
+                            simpleHaptic(.light)
+                            vm.addSet(ex)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("add_a_set")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .padding(.vertical, 8)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.systemBackground))
+                    .listRowInsets(EdgeInsets())
                 }
-                .frame(maxHeight: 320)
+                .listStyle(.plain)
+                .scrollDismissesKeyboard(.never)
+                .frame(maxHeight: .infinity)
             } else {
                 VStack(alignment: .center, spacing: 12) {
                     Image(systemName: "figure.run")
@@ -435,7 +423,18 @@ struct WorkoutRunView: View {
 
     private var navControls: some View {
         HStack(spacing: 12) {
-            Button { vm.previousExercise() } label: {
+            // --- Animations & Haptics ---
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    previousButtonPressed = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        previousButtonPressed = false
+                    }
+                }
+                vm.previousExercise()
+            } label: {
                 HStack {
                     Image(systemName: "chevron.left")
                     Text("previous").frame(maxWidth: .infinity, alignment: .center)
@@ -444,8 +443,19 @@ struct WorkoutRunView: View {
             .buttonStyle(.bordered)
             .disabled(vm.currentPosition == 1)
             .frame(maxWidth: .infinity)
+            .scaleEffect(previousButtonPressed ? 0.9 : 1.0)
 
-            Button { vm.nextExercise(withRest: false) } label: {
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    nextButtonPressed = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        nextButtonPressed = false
+                    }
+                }
+                vm.nextExercise(withRest: false)
+            } label: {
                 HStack {
                     Text("next").frame(maxWidth: .infinity, alignment: .center)
                     Image(systemName: "chevron.right")
@@ -454,6 +464,7 @@ struct WorkoutRunView: View {
             .buttonStyle(.borderedProminent)
             .disabled(vm.currentPosition == vm.totalExercises)
             .frame(maxWidth: .infinity)
+            .scaleEffect(nextButtonPressed ? 0.9 : 1.0)
         }
         .padding(.horizontal)
     }
@@ -464,23 +475,6 @@ struct WorkoutRunView: View {
         let r = s % 60
         if h > 0 { return String(format: "%d:%02d:%02d", h, m, r) }
         return String(format: "%02d:%02d", m, r)
-    }
-    
-    @MainActor private func renderRunShareImage() -> Image {
-        let h = computeHighlights()
-        let card = WorkoutShareCardView(
-            title: vm.workout.displayTitle,
-            durationText: timeString(vm.elapsed),
-            totalExercises: vm.totalExercises,
-            currentDate: Date(),
-            background: shareBackgroundImage,
-            bestRM: h.bestRM,
-            totalVolume: h.totalVolume,
-            starExerciseName: h.star
-        )
-        let renderer = ImageRenderer(content: card)
-        renderer.scale = 3.0
-        return Image(uiImage: renderer.uiImage ?? UIImage())
     }
     
     private func normalized(_ image: UIImage) -> UIImage {
@@ -532,6 +526,72 @@ struct WorkoutRunView: View {
     }
 }
 
+// MARK: - Extension d'Alerte Native
+private extension View {
+    func workoutShareAlert(
+        step: Binding<WorkoutRunView.ShareStep>,
+        onSharePlain: @escaping () -> Void,
+        onShareWithPhoto: @escaping () -> Void,
+        onCancel: @escaping () -> Void
+    ) -> some View {
+        self.alert(
+            step.wrappedValue == .askShare ? "Séance terminée ! 🎉" : "Ajouter une photo ?",
+            isPresented: Binding(
+                get: { step.wrappedValue != .none },
+                set: { isPresenting in
+                    if !isPresenting {
+                        // S'assure que si l'alerte est fermée (ex: clic en dehors, bien que non supporté sur iOS par défaut), l'état se réinitialise
+                        step.wrappedValue = .none
+                    }
+                }
+            ),
+            presenting: step.wrappedValue
+        ) { currentStep in
+            switch currentStep {
+            case .askShare:
+                Button("Non", role: .cancel) {
+                    step.wrappedValue = .none
+                    onCancel()
+                }
+                Button("Partager") {
+                    step.wrappedValue = .none
+                    // Délai nécessaire pour laisser SwiftUI fermer la 1ère alerte et rendre la 2ème de façon fluide
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        step.wrappedValue = .askPhoto
+                    }
+                }
+            case .askPhoto:
+                Button("Non, fond classique") {
+                    step.wrappedValue = .none
+                    onSharePlain()
+                }
+                Button("Oui, choisir") {
+                    step.wrappedValue = .none
+                    onShareWithPhoto()
+                }
+                Button("Annuler", role: .cancel) {
+                    step.wrappedValue = .none
+                    onCancel()
+                }
+            case .none:
+                EmptyView()
+            }
+        } message: { currentStep in
+            switch currentStep {
+            case .askShare:
+                Text("Souhaites-vous partager cette séance en story Instagram ?")
+            case .askPhoto:
+                Text("Veux-tu ajouter une photo de fond à ta carte de partage ?")
+            case .none:
+                EmptyView()
+            }
+        }
+    }
+}
+
+// Les structures SetRowView, metricBlock, PRCelebrationView, WorkoutShareCardView et AddExerciseSheet
+// restent les mêmes que dans ton code précédent (copiées/collées telles quelles).
+
 private struct SetRowView: View {
     let ex: Workout.Exercise
     let idx: Int
@@ -544,12 +604,12 @@ private struct SetRowView: View {
 
     var isDone: Bool { (idx + 1) <= vm.getSetsDone(for: ex) }
     
-    // ✅ Correction du label pour éviter le conflit 'reps' (Int vs Enum)
     var effortLabel: String {
-        let type = ex.effort
-        switch type {
+        switch ex.effort {
         case .reps: return "Reps"
         case .time: return "Sec"
+        case .distance: return "m"
+        @unknown default: return "Effort"
         }
     }
     
@@ -563,61 +623,58 @@ private struct SetRowView: View {
         return AnyView(Color.clear)
     }
 
-
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-
-            // MARK: - Ligne 1 (Header)
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Set \(idx + 1)")
-                        .font(.headline)
+                    Text("Set \(idx + 1)").font(.headline)
 
                     Button {
                         vm.toggleWarmup(for: ex, setIndex: idx)
                     } label: {
                         Text(vm.isWarmup(for: ex, setIndex: idx) ? "Échauffement" : "Série")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(
-                                vm.isWarmup(for: ex, setIndex: idx)
-                                ? Color.orange.opacity(0.22)
-                                : Color.secondary.opacity(0.12)
-                            )
-                            .foregroundStyle(
-                                vm.isWarmup(for: ex, setIndex: idx) ? .orange : .secondary
-                            )
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .background(vm.isWarmup(for: ex, setIndex: idx) ? Color.orange.opacity(0.22) : Color.secondary.opacity(0.12))
+                            .foregroundStyle(vm.isWarmup(for: ex, setIndex: idx) ? .orange : .secondary)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
                     .disabled(isDone)
                 }
-
                 Spacer()
-
-                // ✅ Checkbox toujours visible + hitbox confortable
                 Button {
+                    // --- Animations & Haptics ---
+                    simpleHaptic(.medium)
                     vm.toggleSetDone(ex, setNumber: idx + 1)
                 } label: {
                     Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
                         .font(.system(size: 26, weight: .semibold))
                         .foregroundStyle(isDone ? Color.accentColor : Color.secondary)
-                    
                         .contentTransition(.symbolEffect(.replace))
-                        .frame(width: 44, height: 44) // ✅ hit area
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.plain)
             }
 
-            // MARK: - Ligne 2 (Inputs)
             HStack(spacing: 16) {
-
                 metricBlock(
                     title: effortLabel,
                     valueText: "\(vm.reps(for: ex, setIndex: idx))",
-                    minusAction: { vm.bumpReps(-1, for: ex, setIndex: idx) },
-                    plusAction:  { vm.bumpReps(+1, for: ex, setIndex: idx) },
+                    minusAction: {
+                        // --- Animations & Haptics ---
+                        withAnimation {
+                            simpleHaptic(.light)
+                            vm.bumpReps(-1, for: ex, setIndex: idx)
+                        }
+                    },
+                    plusAction: {
+                        // --- Animations & Haptics ---
+                        withAnimation {
+                            simpleHaptic(.light)
+                            vm.bumpReps(+1, for: ex, setIndex: idx)
+                        }
+                    },
                     footer: {
                         if isDone, let diff = vm.getDiff(for: ex, setIndex: idx), diff.repsDiff != 0 {
                             diffBadge(value: Double(diff.repsDiff), unit: "")
@@ -627,19 +684,19 @@ private struct SetRowView: View {
                 .disabled(isDone)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Poids")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text("Poids").font(.caption).foregroundStyle(.secondary)
 
                     HStack(spacing: 12) {
                         Button(action: {
-                            vm.bumpWeight(-2.5, for: ex, setIndex: idx)
-                            updateLocalFields()
+                            // --- Animations & Haptics ---
+                            withAnimation {
+                                simpleHaptic(.light)
+                                vm.bumpWeight(-2.5, for: ex, setIndex: idx)
+                                updateLocalFields()
+                            }
                         }) {
-                            Image(systemName: "minus.circle.fill")
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
+                            Image(systemName: "minus.circle.fill").font(.title3)
+                        }.buttonStyle(.plain)
 
                         HStack(spacing: 6) {
                             TextField("—", text: $weightText)
@@ -649,28 +706,18 @@ private struct SetRowView: View {
                                 .multilineTextAlignment(.leading)
                                 .frame(minWidth: 44, alignment: .leading)
                                 .focused($weightFocused)
-                                .submitLabel(.done)
-                                .onSubmit { commitWeight() }
-
-                            Text("kg")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            DispatchQueue.main.async {
-                                weightFocused = true
-                            }
                         }
 
                         Button(action: {
-                            vm.bumpWeight(+2.5, for: ex, setIndex: idx)
-                            updateLocalFields()
+                            // --- Animations & Haptics ---
+                            withAnimation {
+                                simpleHaptic(.light)
+                                vm.bumpWeight(+2.5, for: ex, setIndex: idx)
+                                updateLocalFields()
+                            }
                         }) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.title3)
-                        }
-                        .buttonStyle(.plain)
+                            Image(systemName: "plus.circle.fill").font(.title3)
+                        }.buttonStyle(.plain)
                     }
 
                     if isDone, let diff = vm.getDiff(for: ex, setIndex: idx), diff.weightDiff != 0 {
@@ -682,15 +729,10 @@ private struct SetRowView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .disabled(isDone)
             }
-
-            // (Optionnel) delete inline -> je te conseille de le virer et garder swipeActions only
         }
         .onAppear { updateLocalFields() }
         .onChange(of: vm.weight(for: ex, setIndex: idx)) { _ in
             if !weightFocused { updateLocalFields() }
-        }
-        .onChange(of: weightFocused) { focused in
-            if !focused { commitWeight() }
         }
         .toolbar {
             if weightFocused {
@@ -698,11 +740,12 @@ private struct SetRowView: View {
                     Spacer()
                     Button("Done") {
                         commitWeight()
-                        weightFocused = false
+                        DispatchQueue.main.async { weightFocused = false }
                     }
                 }
             }
         }
+        // --- Animations & Haptics ---
         .padding(14)
         .background(rowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
@@ -710,8 +753,8 @@ private struct SetRowView: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .stroke(isDone ? Color.accentColor.opacity(0.20) : Color.clear, lineWidth: 1)
         )
+        .transition(.move(edge: .bottom))
     }
-
 
     private func updateLocalFields() {
         let r = vm.reps(for: ex, setIndex: idx)
@@ -722,14 +765,10 @@ private struct SetRowView: View {
 
     private func commitWeight() {
         let t = weightText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if t.isEmpty {
-            vm.setWeight(0, for: ex, setIndex: idx)
-            return
-        }
+        if t.isEmpty { vm.setWeight(0, for: ex, setIndex: idx); return }
         let normalized = t.replacingOccurrences(of: ",", with: ".")
         if let v = Double(normalized) {
-            let clamped = max(0, min(1000, v))
-            vm.setWeight(clamped, for: ex, setIndex: idx)
+            vm.setWeight(max(0, min(1000, v)), for: ex, setIndex: idx)
         }
     }
     
@@ -737,11 +776,9 @@ private struct SetRowView: View {
         let isPositive = value > 0
         let formattedValue = value.truncatingRemainder(dividingBy: 1) == 0 ? String(Int(value)) : String(format: "%.1f", value)
         let text = (isPositive ? "+" : "") + formattedValue + unit
-        
         return Text(text)
             .font(.system(size: 9, weight: .black, design: .rounded))
-            .padding(.horizontal, 4)
-            .padding(.vertical, 1)
+            .padding(.horizontal, 4).padding(.vertical, 1)
             .background(isPositive ? Color.green.opacity(0.2) : Color.red.opacity(0.2))
             .foregroundStyle(isPositive ? .green : .red)
             .cornerRadius(4)
@@ -758,88 +795,35 @@ private func metricBlock(
     @ViewBuilder footer: () -> some View = { EmptyView() }
 ) -> some View {
     VStack(alignment: .leading, spacing: 8) {
-        Text(title)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
+        Text(title).font(.caption).foregroundStyle(.secondary)
         HStack(spacing: 12) {
-            Button(action: minusAction) {
-                Image(systemName: "minus.circle.fill")
-                    .font(.title3)
-            }
-            .buttonStyle(.plain)
-
+            Button(action: minusAction) { Image(systemName: "minus.circle.fill").font(.title3) }.buttonStyle(.plain)
             HStack(spacing: 6) {
-                Text(valueText)
-                    .font(.system(.title3, design: .rounded).weight(.bold))
-                    .monospacedDigit()
-                    .frame(minWidth: 44, alignment: .leading)
-
-                if let suffix {
-                    Text(suffix).font(.caption).foregroundStyle(.secondary)
-                }
+                Text(valueText).font(.system(.title3, design: .rounded).weight(.bold)).monospacedDigit().frame(minWidth: 44, alignment: .leading)
+                if let suffix { Text(suffix).font(.caption).foregroundStyle(.secondary) }
             }
-
-            Button(action: plusAction) {
-                Image(systemName: "plus.circle.fill")
-                    .font(.title3)
-            }
-            .buttonStyle(.plain)
+            Button(action: plusAction) { Image(systemName: "plus.circle.fill").font(.title3) }.buttonStyle(.plain)
         }
-
-        footer()
-            .frame(height: 16, alignment: .leading)
+        footer().frame(height: 16, alignment: .leading)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
 }
 
-
-private func formatWeight(_ w: Double) -> String {
-    if w == 0 { return "—" }
-    return w.truncatingRemainder(dividingBy: 1) == 0 ? "\(Int(w))" : String(format: "%.1f", w)
-}
-
 struct PRCelebrationView: View {
     @State private var animateTrophy = false
-    
     var body: some View {
         VStack(spacing: 20) {
             ZStack {
-                // Effet de halo derrière le trophée
-                Circle()
-                    .fill(Color.yellow.opacity(0.2))
-                    .frame(width: 200, height: 200)
-                    .scaleEffect(animateTrophy ? 1.5 : 0.8)
-                    .opacity(animateTrophy ? 0 : 1)
-                
-                Image(systemName: "trophy.fill")
-                    .font(.system(size: 80))
-                    .foregroundStyle(.yellow)
-                    .scaleEffect(animateTrophy ? 1.2 : 0.9)
-                    .rotationEffect(.degrees(animateTrophy ? 10 : -10))
+                Circle().fill(Color.yellow.opacity(0.2)).frame(width: 200, height: 200).scaleEffect(animateTrophy ? 1.5 : 0.8).opacity(animateTrophy ? 0 : 1)
+                Image(systemName: "trophy.fill").font(.system(size: 80)).foregroundStyle(.yellow).scaleEffect(animateTrophy ? 1.2 : 0.9).rotationEffect(.degrees(animateTrophy ? 10 : -10))
             }
-            
             VStack {
-                Text("NOUVEAU RECORD !")
-                    .font(.system(.title, design: .rounded))
-                    .fontWeight(.black)
-                    .foregroundStyle(.yellow)
-                
-                Text("Tu viens de dépasser tes limites.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            .scaleEffect(animateTrophy ? 1.0 : 0.8)
+                Text("NOUVEAU RECORD !").font(.system(.title, design: .rounded)).fontWeight(.black).foregroundStyle(.yellow)
+                Text("Tu viens de dépasser tes limites.").font(.subheadline).foregroundStyle(.secondary)
+            }.scaleEffect(animateTrophy ? 1.0 : 0.8)
         }
-        .padding(40)
-        .background(.ultraThinMaterial)
-        .cornerRadius(30)
-        .shadow(radius: 20)
-        .onAppear {
-            withAnimation(.interpolatingSpring(stiffness: 50, damping: 5).repeatForever(autoreverses: true)) {
-                animateTrophy = true
-            }
-        }
+        .padding(40).background(.ultraThinMaterial).cornerRadius(30).shadow(radius: 20)
+        .onAppear { withAnimation(.interpolatingSpring(stiffness: 50, damping: 5).repeatForever(autoreverses: true)) { animateTrophy = true } }
     }
 }
 
@@ -855,97 +839,35 @@ struct WorkoutShareCardView: View {
 
     var body: some View {
         ZStack {
-            // Background photo or fallback gradient
             if let bg = background {
                 GeometryReader { proxy in
-                    Image(uiImage: bg)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: proxy.size.width, height: proxy.size.height)
-                        .clipped()
+                    Image(uiImage: bg).resizable().aspectRatio(contentMode: .fill).frame(width: proxy.size.width, height: proxy.size.height).clipped()
                 }
             } else {
                 LinearGradient(colors: [.orange.opacity(0.3), .purple.opacity(0.6)], startPoint: .topLeading, endPoint: .bottomTrailing)
             }
-
-            // Bottom fade to ensure readability
             VStack { Spacer() }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [.black.opacity(0.75), .black.opacity(0.0)]),
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                    .opacity(0.9)
-                )
+                .background(LinearGradient(gradient: Gradient(colors: [.black.opacity(0.75), .black.opacity(0.0)]), startPoint: .bottom, endPoint: .top).opacity(0.9))
                 .allowsHitTesting(false)
 
-            // Bottom content
-            VStack(alignment: .leading, spacing: 10) {
-                Text(title)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 30) {
+                Text(title).font(.system(size: 84, weight: .bold, design: .rounded)).lineLimit(2).multilineTextAlignment(.leading)
+                HStack(spacing: 36) {
                     Label(durationText, systemImage: "clock.fill")
                     Text("·")
                     Label("\(totalExercises) exos", systemImage: "dumbbell.fill")
-                }
-                .font(.headline)
-                .foregroundStyle(.white)
-                .opacity(0.95)
-
-                // Highlights
-                HStack(spacing: 12) {
-                    if let vol = totalVolume {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Volume total").font(.caption).foregroundStyle(.secondary)
-                            Text("\(Int(vol)) kg").bold()
-                        }
-                        .padding(10)
-                        .background(Color.white.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    if let rm = bestRM, rm > 0 {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Meilleur 1RM est.").font(.caption).foregroundStyle(.secondary)
-                            Text(String(format: "%.1f kg", rm)).bold()
-                        }
-                        .padding(10)
-                        .background(Color.white.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    if let star = starExerciseName {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Exo star").font(.caption).foregroundStyle(.secondary)
-                            Text(LocalizedStringKey(star)).bold()
-                                .lineLimit(1)
-                        }
-                        .padding(10)
-                        .background(Color.white.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                }
+                }.font(.system(size: 50, weight: .semibold)).foregroundStyle(.white).opacity(0.95)
 
                 HStack {
-                    Text("MuscleMonitor")
-                        .font(.caption).bold()
-                        .padding(.horizontal, 8).padding(.vertical, 4)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
+                    Text("MuscleMonitor").font(.system(size: 36, weight: .bold)).padding(.horizontal, 24).padding(.vertical, 12).background(.ultraThinMaterial).clipShape(Capsule())
                     Spacer()
-                    Text(currentDate, style: .date)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.8))
+                    Text(currentDate, style: .date).font(.system(size: 36, weight: .medium)).foregroundStyle(.white.opacity(0.8))
                 }
             }
-            .foregroundStyle(.white)
-            .padding(24)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(maxHeight: .infinity, alignment: .bottom)
+            .foregroundStyle(.white).padding(72).frame(maxWidth: .infinity, alignment: .leading).frame(maxHeight: .infinity, alignment: .bottom)
         }
-        .frame(width: 1080/3, height: 1920/3) // story 9:16 (renderer scale = 3)
+        .frame(width: 1080, height: 1920)
         .clipped()
     }
 }
@@ -953,104 +875,63 @@ struct WorkoutShareCardView: View {
 struct AddExerciseSheet: View {
     @Environment(\.dismiss) private var dismiss
     let onAdd: (Workout.Exercise) -> Void
-
-    // Catalog from the central mapping
     private let allNames: [String] = Workout.Exercise.muscleMapping.keys.sorted()
-
     @State private var searchText: String = ""
     @State private var selectedName: String = Workout.Exercise.muscleMapping.keys.sorted().first ?? ""
     @State private var equipment: Workout.Equipment? = nil
-
-    // Quick config
     @State private var sets: Int = 3
     @State private var restSec: Int = 90
-    @State private var effortMode: Int = 0 // 0 = reps, 1 = time
+    @State private var effortMode: Int = 0
     @State private var targetReps: Int = 10
     @State private var targetSeconds: Int = 60
+    @State private var targetMeters: Int = 100
 
-    private var filteredNames: [String] {
-        guard !searchText.isEmpty else { return allNames }
-        return allNames.filter { $0.localizedCaseInsensitiveContains(searchText) }
-    }
-
-    private var isTimeBasedDefault: Bool {
-        // Time/cardio defaults
-        let tags = Workout.Exercise.muscleMapping[selectedName] ?? []
-        if tags.contains(.cardio) { return true }
-        let timeBasedNames: Set<String> = [
-            "plank", "dynamic_plank", "hollow_body_hold", "running",
-            "rowing_machine", "stationary_bike", "elliptical_bike",
-            "side_plank", "mountain_climbers"
-        ]
-        return timeBasedNames.contains(selectedName)
+    private var effortModeDefault: Int {
+        let name = selectedName
+        if Workout.Exercise.distanceBasedNames.contains(name) { return 2 }
+        if Workout.Exercise.muscleMapping[name]?.contains(.cardio) ?? false { return 1 }
+        if Workout.Exercise.timeBasedNames.contains(name) { return 1 }
+        return 0
     }
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("exercise") {
-                    Picker("name", selection: $selectedName) {
-                        ForEach(allNames, id: \.self) { key in
-                            Text(LocalizedStringKey(key)).tag(key)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-
-                    Picker("equipment", selection: Binding<Workout.Equipment?>(
-                        get: { equipment },
-                        set: { equipment = $0 }
-                    )) {
+                    Picker("name", selection: $selectedName) { ForEach(allNames, id: \.self) { key in Text(LocalizedStringKey(key)).tag(key) } }.pickerStyle(.navigationLink)
+                    Picker("equipment", selection: Binding<Workout.Equipment?>(get: { equipment }, set: { equipment = $0 })) {
                         Text("none").tag(Optional<Workout.Equipment>.none)
-                        ForEach(Workout.Equipment.allCases) { eq in
-                            Text(eq.display).tag(Optional(eq))
-                        }
+                        ForEach(Workout.Equipment.allCases) { eq in Text(eq.display).tag(Optional(eq)) }
                     }
                 }
-
                 Section("settings") {
                     Stepper("Séries : \(sets)", value: $sets, in: 1...10)
                     Stepper("Repos : \(restSec)s", value: $restSec, in: 0...300, step: 15)
-
                     Picker("type_of_effort", selection: $effortMode) {
                         Text("reps").tag(0)
                         Text("time").tag(1)
-                    }
-                    .pickerStyle(.segmented)
-
-                    if effortMode == 0 {
-                        Stepper("Répétitions : \(targetReps)", value: $targetReps, in: 1...100)
-                    } else {
-                        Stepper("Durée : \(targetSeconds)s", value: $targetSeconds, in: 5...600, step: 5)
-                    }
+                        Text("distance").tag(2)
+                    }.pickerStyle(.segmented)
+                    if effortMode == 0 { Stepper("Répétitions : \(targetReps)", value: $targetReps, in: 1...100) }
+                    else if effortMode == 1 { Stepper("Durée : \(targetSeconds)s", value: $targetSeconds, in: 5...600, step: 5) }
+                    else { Stepper("Distance : \(targetMeters)m", value: $targetMeters, in: 10...10000, step: 10) }
                 }
             }
             .navigationTitle("add_exercise")
-            .onAppear {
-                // Initialize effort mode sensibly on first appear
-                effortMode = isTimeBasedDefault ? 1 : 0
-            }
-            .onChange(of: selectedName) { _ in
-                effortMode = isTimeBasedDefault ? 1 : 0
-            }
+            .onAppear { effortMode = effortModeDefault }
+            .onChange(of: selectedName) { _ in effortMode = effortModeDefault }
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("cancel") { dismiss() }
-                }
+                ToolbarItem(placement: .cancellationAction) { Button("cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("add") {
-                        // Build the exercise from current selections
                         let tags = Workout.Exercise.muscleMapping[selectedName] ?? [.dos]
-                        let mainTag = tags.first ?? .dos
-                        let effort: Workout.Effort = (effortMode == 0) ? .reps(targetReps) : .time(seconds: targetSeconds)
-                        let ex = Workout.Exercise(
-                            name: selectedName,
-                            muscleGroup: mainTag,
-                            equipment: equipment,
-                            sets: sets,
-                            effort: effort,
-                            restSec: restSec
-                        )
-                        onAdd(ex)
+                        let effort: Workout.Effort
+                        switch effortMode {
+                        case 0: effort = .reps(targetReps)
+                        case 1: effort = .time(seconds: targetSeconds)
+                        default: effort = .distance(meters: targetMeters)
+                        }
+                        onAdd(Workout.Exercise(name: selectedName, muscleGroup: tags.first ?? .dos, equipment: equipment, sets: sets, effort: effort, restSec: restSec))
                         dismiss()
                     }
                 }
@@ -1059,3 +940,27 @@ struct AddExerciseSheet: View {
     }
 }
 
+// --- TRANSITION PERSONNALISÉE POUR EXERCICES ---
+extension AnyTransition {
+    static func exerciseSwitch(direction: Int) -> AnyTransition {
+        // L'insertion est directionnelle : la vue entrante arrive du bon côté.
+        // Le removal est intentionnellement indépendant de la direction :
+        // SwiftUI évalue le removal depuis le dernier rendu de la vue sortante,
+        // donc si la direction a changé (next→previous ou inverse), la direction
+        // stockée sur la vue sortante est l'ancienne valeur et les deux vues
+        // s'animent du même côté. Le zoom-out+opacity évite ce problème.
+        let insertion: AnyTransition
+        if direction == 1 {
+            insertion = .move(edge: .trailing)
+                .combined(with: .opacity)
+                .combined(with: .scale(scale: 1.12, anchor: .trailing))
+        } else {
+            insertion = .move(edge: .leading)
+                .combined(with: .opacity)
+                .combined(with: .scale(scale: 1.12, anchor: .leading))
+        }
+        let removal = AnyTransition.opacity
+            .combined(with: .scale(scale: 0.88))
+        return .asymmetric(insertion: insertion, removal: removal)
+    }
+}

@@ -56,6 +56,7 @@ struct ConfigureExerciseRow: View {
     private func effortSummary(_ ex: Workout.Exercise) -> String {
         if ex.isCardio {
             let s = ex.targetSeconds
+            guard s > 0 else { return "Durée à définir" }
             let h = s / 3600
             let m = (s % 3600) / 60
             if h > 0 {
@@ -66,8 +67,15 @@ struct ConfigureExerciseRow: View {
         }
         
         switch ex.effort {
-        case .reps(let r): return "\(ex.sets)×\(r)"
-        case .time(let s): return "\(ex.sets)×\(s)s"
+        case .reps(let r):
+            return "\(ex.sets)×\(r)"
+        case .time(let s):
+            return "\(ex.sets)×\(s)s"
+        case .distance(let m):
+            return "\(ex.sets)×\(m)m"
+        @unknown default:
+            // Fallback to a generic description if new cases are added in the future
+            return "\(ex.sets)×?"
         }
     }
 }
@@ -117,7 +125,7 @@ private struct EditExerciseSheet: View {
                 
                 // Dans EditExerciseSheet
                 Section("settings") {
-                    if exercise.isCardio {
+                    if exercise.isCardio && exercise.isTimeBased {
                         // --- MODE CARDIO : Affichage simplifié ---
                         VStack(alignment: .leading, spacing: 10) {
                             Text("duration").font(.subheadline).foregroundColor(.secondary)
@@ -156,23 +164,36 @@ private struct EditExerciseSheet: View {
                         
                         Picker("type_of_effort", selection: Binding(
                             get: {
-                                switch exercise.effort { case .reps: return 0; case .time: return 1 }
+                                switch exercise.effort {
+                                case .reps:
+                                    return 0
+                                case .time:
+                                    return 1
+                                case .distance:
+                                    return 2
+                                @unknown default:
+                                    return 0
+                                }
                             },
                             set: { idx in
-                                if idx == 0 {
+                                switch idx {
+                                case 0:
                                     let r = exercise.targetReps == 0 ? 10 : exercise.targetReps
                                     exercise.effort = .reps(r)
-                                } else {
+                                case 1:
                                     let s = exercise.targetSeconds == 0 ? 60 : exercise.targetSeconds
                                     exercise.effort = .time(seconds: s)
+                                default:
+                                    let m = exercise.targetMeters == 0 ? 100 : exercise.targetMeters
+                                    exercise.effort = .distance(meters: m)
                                 }
                             }
                         )) {
                             Text("reps").tag(0)
                             Text("time").tag(1)
+                            Text("distance").tag(2)
                         }
                         
-                        // Affichage dynamique reps ou temps (gainage)
                         switch exercise.effort {
                         case .reps(let r):
                             Stepper("Répétitions : \(r)", value: Binding(
@@ -184,6 +205,14 @@ private struct EditExerciseSheet: View {
                                 get: { s },
                                 set: { exercise.effort = .time(seconds: $0) }
                             ), in: 5...600, step: 5)
+                        case .distance(let m):
+                            Stepper("Distance : \(m)m", value: Binding(
+                                get: { m },
+                                set: { exercise.effort = .distance(meters: $0) }
+                            ), in: 10...10000, step: 10)
+                        @unknown default:
+                            Text("Unsupported effort type")
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
@@ -198,3 +227,4 @@ private struct EditExerciseSheet: View {
         }
     }
 }
+
