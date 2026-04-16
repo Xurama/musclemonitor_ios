@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE3E60B22F892F1800021BA8 /* MuscleMonitorWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = CE3E60A82F892F1500021BA8 /* MuscleMonitorWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		CEDD9BEA2E7D3CC1000B45C0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF744D52E7C2243009DDD26 /* WidgetKit.framework */; };
 		CEDD9BEB2E7D3CC1000B45C0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEF744D72E7C2244009DDD26 /* SwiftUI.framework */; };
 		CEDD9BF82E7D3CC3000B45C0 /* WorkoutExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -15,6 +16,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		CE3E60B02F892F1800021BA8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CE8CC58F2E731BBF001623D9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CE3E60A72F892F1500021BA8;
+			remoteInfo = "MuscleMonitorWatch Watch App";
+		};
 		CE8CC5A82E731BC0001623D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE8CC58F2E731BBF001623D9 /* Project object */;
@@ -39,6 +47,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		CE3E60B32F892F1800021BA8 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				CE3E60B22F892F1800021BA8 /* MuscleMonitorWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CEF744EE2E7C2245009DDD26 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -53,6 +72,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE3E60A82F892F1500021BA8 /* MuscleMonitorWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MuscleMonitorWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE8CC5972E731BBF001623D9 /* MuscleMonitor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MuscleMonitor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE8CC5A72E731BC0001623D9 /* MuscleMonitorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuscleMonitorTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE8CC5B12E731BC0001623D9 /* MuscleMonitorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MuscleMonitorUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,6 +118,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		CE3E60A92F892F1500021BA8 /* MuscleMonitorWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "MuscleMonitorWatch Watch App";
+			sourceTree = "<group>";
+		};
 		CE8CC5992E731BBF001623D9 /* MuscleMonitor */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -129,6 +154,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		CE3E60A52F892F1500021BA8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE8CC5942E731BBF001623D9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,6 +203,7 @@
 				CE8CC5AA2E731BC0001623D9 /* MuscleMonitorTests */,
 				CE8CC5B42E731BC0001623D9 /* MuscleMonitorUITests */,
 				CEDD9BEC2E7D3CC1000B45C0 /* Workout */,
+				CE3E60A92F892F1500021BA8 /* MuscleMonitorWatch Watch App */,
 				CEF744D42E7C2243009DDD26 /* Frameworks */,
 				CE8CC5982E731BBF001623D9 /* Products */,
 			);
@@ -183,6 +216,7 @@
 				CE8CC5A72E731BC0001623D9 /* MuscleMonitorTests.xctest */,
 				CE8CC5B12E731BC0001623D9 /* MuscleMonitorUITests.xctest */,
 				CEDD9BE92E7D3CC1000B45C0 /* WorkoutExtension.appex */,
+				CE3E60A82F892F1500021BA8 /* MuscleMonitorWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -199,6 +233,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		CE3E60A72F892F1500021BA8 /* MuscleMonitorWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE3E60B62F892F1800021BA8 /* Build configuration list for PBXNativeTarget "MuscleMonitorWatch Watch App" */;
+			buildPhases = (
+				CE3E60A42F892F1500021BA8 /* Sources */,
+				CE3E60A52F892F1500021BA8 /* Frameworks */,
+				CE3E60A62F892F1500021BA8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				CE3E60A92F892F1500021BA8 /* MuscleMonitorWatch Watch App */,
+			);
+			name = "MuscleMonitorWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "MuscleMonitorWatch Watch App";
+			productReference = CE3E60A82F892F1500021BA8 /* MuscleMonitorWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		CE8CC5962E731BBF001623D9 /* MuscleMonitor */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = CE8CC5BB2E731BC0001623D9 /* Build configuration list for PBXNativeTarget "MuscleMonitor" */;
@@ -207,11 +263,13 @@
 				CE8CC5942E731BBF001623D9 /* Frameworks */,
 				CE8CC5952E731BBF001623D9 /* Resources */,
 				CEF744EE2E7C2245009DDD26 /* Embed Foundation Extensions */,
+				CE3E60B32F892F1800021BA8 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				CEDD9BF72E7D3CC3000B45C0 /* PBXTargetDependency */,
+				CE3E60B12F892F1800021BA8 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				CE8CC5992E731BBF001623D9 /* MuscleMonitor */,
@@ -299,9 +357,12 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					CE3E60A72F892F1500021BA8 = {
+						CreatedOnToolsVersion = 26.4;
+					};
 					CE8CC5962E731BBF001623D9 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -340,11 +401,19 @@
 				CE8CC5A62E731BC0001623D9 /* MuscleMonitorTests */,
 				CE8CC5B02E731BC0001623D9 /* MuscleMonitorUITests */,
 				CEDD9BE82E7D3CC1000B45C0 /* WorkoutExtension */,
+				CE3E60A72F892F1500021BA8 /* MuscleMonitorWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		CE3E60A62F892F1500021BA8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE8CC5952E731BBF001623D9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -377,6 +446,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		CE3E60A42F892F1500021BA8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CE8CC5932E731BBF001623D9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -408,6 +484,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		CE3E60B12F892F1800021BA8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CE3E60A72F892F1500021BA8 /* MuscleMonitorWatch Watch App */;
+			targetProxy = CE3E60B02F892F1800021BA8 /* PBXContainerItemProxy */;
+		};
 		CE8CC5A92E731BC0001623D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CE8CC5962E731BBF001623D9 /* MuscleMonitor */;
@@ -426,6 +507,88 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		CE3E60B42F892F1800021BA8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MuscleMonitorWatch Watch App/MuscleMonitorWatch Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MuscleMonitorWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MuscleMonitorWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor utilise vos données de santé pour suivre vos séances cardio (fréquence cardiaque, distance, calories).";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos séances cardio dans Apple Santé pour centraliser votre suivi sportif.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MuscleMonitor utilise votre position GPS pour suivre votre route lors des séances de course et de vélo.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = xurama.MuscleMonitor;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor.Watch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Debug;
+		};
+		CE3E60B52F892F1800021BA8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MuscleMonitorWatch Watch App/MuscleMonitorWatch Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3SX7NKN6Q9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MuscleMonitorWatch-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MuscleMonitorWatch;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor utilise vos données de santé pour suivre vos séances cardio (fréquence cardiaque, distance, calories).";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos séances cardio dans Apple Santé pour centraliser votre suivi sportif.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MuscleMonitor utilise votre position GPS pour suivre votre route lors des séances de course et de vélo.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = xurama.MuscleMonitor;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xurama.MuscleMonitor.Watch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Release;
+		};
 		CE8CC5B92E731BC0001623D9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -567,15 +730,17 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MuscleMonitor/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "MuscleMonitor a besoin d'utiliser la caméra afin de pouvoir lire les codes barre des aliments";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor a besoin de lire vos calories d'activité et de repos pour calculer votre balance énergétique quotidienne avec précision.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos repas et apports nutritionnels dans Apple Santé pour vous aider à centraliser le suivi de votre nutrition.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MuscleMonitor utilise votre position GPS pour suivre votre route lors des séances de course et de vélo.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -608,15 +773,17 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MuscleMonitor/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "";
-				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSCameraUsageDescription = "MuscleMonitor a besoin d'utiliser la caméra afin de pouvoir lire les codes barre des aliments";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "MuscleMonitor a besoin de lire vos calories d'activité et de repos pour calculer votre balance énergétique quotidienne avec précision.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "MuscleMonitor enregistre vos repas et apports nutritionnels dans Apple Santé pour vous aider à centraliser le suivi de votre nutrition.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "MuscleMonitor utilise votre position GPS pour suivre votre route lors des séances de course et de vélo.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -764,6 +931,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CE3E60B62F892F1800021BA8 /* Build configuration list for PBXNativeTarget "MuscleMonitorWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE3E60B42F892F1800021BA8 /* Debug */,
+				CE3E60B52F892F1800021BA8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		CE8CC5922E731BBF001623D9 /* Build configuration list for PBXProject "MuscleMonitor" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
